@@ -29,9 +29,12 @@ int main() {
     // Show DPS calculations
     std::cout << std::endl;
     std::cout << "DPS comparison:" << std::endl;
-    std::cout << "  " << rebellion.getName() << ": " << rebellion.calculateDPS() << std::endl;
-    std::cout << "  " << ebonyIvory.getName() << ": " << ebonyIvory.calculateDPS() << std::endl;
-    std::cout << "  " << cerberus.getName() << ": " << cerberus.calculateDPS() << std::endl;
+    std::cout << "  " << rebellion.getName() << ": " << rebellion.calculateDPS()
+              << " (Speed: " << rebellion.getAttackSpeed() << ")" << std::endl;
+    std::cout << "  " << ebonyIvory.getName() << ": " << ebonyIvory.calculateDPS()
+              << " (Speed: " << ebonyIvory.getAttackSpeed() << ")" << std::endl;
+    std::cout << "  " << cerberus.getName() << ": " << cerberus.calculateDPS()
+              << " (Speed: " << cerberus.getAttackSpeed() << ")" << std::endl;
 
     // ===== 2. Create Player (Dante) =====
     std::cout << std::endl;
@@ -42,6 +45,8 @@ int main() {
     dante.equipWeapon(cerberus);
 
     std::cout << dante << std::endl;
+    std::cout << "  Weapons equipped: " << dante.getWeaponCount()
+              << " | DT Active: " << (dante.isDevilTriggerActive() ? "Yes" : "No") << std::endl;
     std::cout << std::endl;
     std::cout << dante.getStatusReport() << std::endl;
 
@@ -75,12 +80,15 @@ int main() {
     std::cout << hellPride << std::endl;
     std::cout << frost << std::endl;
 
-    // Show threat levels
+    // Show threat levels and attack power
     std::cout << std::endl;
     std::cout << "Threat analysis:" << std::endl;
-    std::cout << "  " << scarecrow.getThreatLevel() << std::endl;
-    std::cout << "  " << hellPride.getThreatLevel() << std::endl;
-    std::cout << "  " << frost.getThreatLevel() << std::endl;
+    std::cout << "  " << scarecrow.getThreatLevel()
+              << " (ATK: " << scarecrow.getAttackDamage() << ")" << std::endl;
+    std::cout << "  " << hellPride.getThreatLevel()
+              << " (ATK: " << hellPride.getAttackDamage() << ")" << std::endl;
+    std::cout << "  " << frost.getThreatLevel()
+              << " (ATK: " << frost.getAttackDamage() << ")" << std::endl;
 
     // ===== 5. Create Castle Rooms =====
     std::cout << std::endl;
@@ -93,7 +101,13 @@ int main() {
     throneRoom.addDemon(frost);
 
     std::cout << entrance << std::endl;
+    std::cout << "  Room: " << entrance.getRoomName()
+              << " | Artifact: " << entrance.getArtifactName()
+              << " | Demons: " << entrance.getDemonCount() << std::endl;
     std::cout << throneRoom << std::endl;
+    std::cout << "  Room: " << throneRoom.getRoomName()
+              << " | Artifact: " << throneRoom.getArtifactName()
+              << " | Demons: " << throneRoom.getDemonCount() << std::endl;
 
     // Room descriptions
     std::cout << std::endl;
