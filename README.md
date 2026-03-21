@@ -1,30 +1,5 @@
-# Nu primesc notă pentru că nu am pus titlu și descriere
-
-### Folosiți template-ul corespunzător grupei voastre!
-
-| Laborant  | Link template                                |
-|-----------|----------------------------------------------|
-| Dragoș B  | https://github.com/Ionnier/oop-template      |
-| Tiberiu M | https://github.com/MaximTiberiu/oop-template |
-| Marius MC | https://github.com/mcmarius/oop-template     |
-
-### Important!
-
-Aveți voie cu cod generat de modele de limbaj la care nu ați contribuit semnificativ doar dacă documentați riguros acest proces.
-Codul generat pus "ca să fie"/pe care nu îl înțelegeți se punctează doar pentru puncte bonus, doar în contextul
-în care oferă funcționalități ajutătoare și doar dacă are sens.
-
-Codul din proiect trebuie să poată fi ușor de înțeles și de modificat de către altcineva. Pentru detalii, veniți la ore.
-
-O cerință nu se consideră îndeplinită dacă este realizată doar prin cod generat.
-
-- **Fără cod de umplutură/fără sens!**
-- **Fără copy-paste!**
-- **Fără variabile globale!**
-- **Fără atribute publice!**
-- **Pentru T2 și T3, fără date în cod!** Datele vor fi citite din fișier, aveți exemple destule.
-- **Obligatoriu** fișiere cu date mai multe din care să citiți, obligatoriu cu biblioteci externe: fișiere (local sau server) sau baze de date
-- obligatoriu (TBD) să integrați cel puțin două biblioteci externe pe lângă cele pentru stocare
+# Dante's Adventure
+Joc 2D tip platformer, parkour, cu personaje si elemente bazate pe universul Devil May Cry. Scopul este sa explorezi un castel unde vei gasi diferiti demoni ce trebuie vanati, iar scopul final este sa gasesti artefactul ascuns. Vor exista diferite specii de demoni si personajul principal va fi Dante, un vanator de demoni, ce are la dispozitie o sabie si doua pistoale cu care poate invinge inamicii. Eventual va avea un health bar si un Devil Trigger bar (pe baza acestuia isi va activa forma de demon cu care isi va da heal si va avea super strength bonus). Posibil sa adaug mai multe Devil Arms ce vor fi obtinute pe parcursul jocului.
 
 ### Tema 0
 
