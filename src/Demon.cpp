@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 #include <iostream>
 #include "../include/Demon.h"
 #include "../include/Player.h"
 #include "../include/DMCExceptions.h"
+=======
+#include "../include/Demon.h"
+>>>>>>> 1a3ae9cfb1c91f476224ec9ac56d2acd5f9d950f
 
 static std::string demonTypeToString(DemonType type) {
     switch (type) {
@@ -14,13 +18,17 @@ static std::string demonTypeToString(DemonType type) {
     return "Unknown";
 }
 
+<<<<<<< HEAD
 // ===== Demon Base Class Implementation =====
 
+=======
+>>>>>>> 1a3ae9cfb1c91f476224ec9ac56d2acd5f9d950f
 Demon::Demon() : name("Unknown Demon"), type(DemonType::Scarecrow),
                  maxHealth(50), currentHealth(50), attackDamage(5), alive(true) {}
 
 Demon::Demon(const std::string& name, DemonType type, int maxHealth, int attackDamage)
     : name(name), type(type), maxHealth(maxHealth), currentHealth(maxHealth),
+<<<<<<< HEAD
       attackDamage(attackDamage), alive(true) {
     if (name.empty()) {
         throw InvalidEntityException("Demon name cannot be empty!");
@@ -36,6 +44,9 @@ Demon::Demon(const std::string& name, DemonType type, int maxHealth, int attackD
 Demon::~Demon() {
     std::cout << "[Demon Destructor] " << name << " dissolved back into the Underworld." << std::endl;
 }
+=======
+      attackDamage(attackDamage), alive(true) {}
+>>>>>>> 1a3ae9cfb1c91f476224ec9ac56d2acd5f9d950f
 
 const std::string& Demon::getName() const {
     return name;
@@ -103,6 +114,7 @@ std::string Demon::getThreatLevel() const {
            + " [HP: " + std::to_string(currentHealth) + "/" + std::to_string(maxHealth) + "]";
 }
 
+<<<<<<< HEAD
 // ===== ScarecrowDemon Implementation =====
 
 ScarecrowDemon::ScarecrowDemon()
@@ -210,4 +222,12 @@ void FrostDemon::printImpl(std::ostream& os) const {
        << " | Shield: " << iceShieldHP
        << " | ATK: " << attackDamage
        << " | " << (alive ? "Alive" : "Dead") << "]";
+=======
+std::ostream& operator<<(std::ostream& os, const Demon& demon) {
+    os << "Demon[" << demon.name << " | " << demonTypeToString(demon.type)
+       << " | HP: " << demon.currentHealth << "/" << demon.maxHealth
+       << " | ATK: " << demon.attackDamage
+       << " | " << (demon.alive ? "Alive" : "Dead") << "]";
+    return os;
+>>>>>>> 1a3ae9cfb1c91f476224ec9ac56d2acd5f9d950f
 }
