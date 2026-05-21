@@ -1,9 +1,20 @@
 #include "../include/Weapon.h"
+#include "../include/DMCExceptions.h"
 
-Weapon::Weapon() : name("Unknown"), damage(0), type(WeaponType::Melee), attackSpeed(1.0) {}
+Weapon::Weapon() : name("Unknown"), damage(1), type(WeaponType::Melee), attackSpeed(1.0) {}
 
 Weapon::Weapon(const std::string& name, int damage, WeaponType type, double attackSpeed)
-    : name(name), damage(damage), type(type), attackSpeed(attackSpeed) {}
+    : name(name), damage(damage), type(type), attackSpeed(attackSpeed) {
+    if (name.empty()) {
+        throw InvalidWeaponException("Weapon name cannot be empty!");
+    }
+    if (damage <= 0) {
+        throw InvalidWeaponException("Weapon damage must be greater than 0! (Received: " + std::to_string(damage) + " for " + name + ")");
+    }
+    if (attackSpeed <= 0.0) {
+        throw InvalidWeaponException("Weapon attack speed must be greater than 0! (Received: " + std::to_string(attackSpeed) + " for " + name + ")");
+    }
+}
 
 const std::string& Weapon::getName() const {
     return name;

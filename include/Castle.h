@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
 #include "Demon.h"
 
 class Player; // forward declaration
@@ -11,7 +12,7 @@ class Player; // forward declaration
 class Castle {
 private:
     std::string roomName;
-    std::vector<Demon> demons;
+    std::vector<std::unique_ptr<Demon>> demons;
     bool artifactHidden;
     std::string artifactName;
 
@@ -19,18 +20,31 @@ public:
     Castle();
     Castle(const std::string& roomName, const std::string& artifactName);
 
+    // Rule of Three for deep copying the pointers
+    Castle(const Castle& other);
+    Castle& operator=(Castle other); // using copy-and-swap (takes by value!)
+    ~Castle();
+
+    // Friend swap function for the copy-and-swap idiom
+    friend void swap(Castle& first, Castle& second) noexcept;
+
     const std::string& getRoomName() const;
     const std::string& getArtifactName() const;
     bool isArtifactHidden() const;
     int getDemonCount() const;
     int getAliveDemonCount() const;
 
-    /// Adds a demon to this room
+    /// Adds a demon to this room (polymorphic add/clone)
     void addDemon(const Demon& demon);
 
-    /// Explores the room: player fights each alive demon, artifact revealed when all slain.
-    /// Returns true if the artifact is found.
-    bool exploreRoom(Player& player);
+    const std::vector<std::unique_ptr<Demon>>& getDemons() const;
+
+    /// Applies special entry effects like FrostDemon cold aura
+    void applyRoomEntryEffects(Player& player, std::vector<std::string>& log);
+
+    /// Executes a single attack turn (Dante attacks, then demon retaliates)
+    /// and logs all printed output into log.
+    void executeCombatRound(Player& player, Demon& target, std::vector<std::string>& log);
 
     /// Returns a detailed map/description of the room and its inhabitants
     std::string getRoomDescription() const;
