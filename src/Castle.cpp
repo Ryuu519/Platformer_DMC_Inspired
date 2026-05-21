@@ -1,6 +1,4 @@
 #include <sstream>
-#include <cstdlib>
-#include <ctime>
 #include "../include/Castle.h"
 #include "../include/Player.h"
 
@@ -64,46 +62,14 @@ bool Castle::exploreRoom(Player& player) {
                       << " ---" << std::endl;
             std::cout << "  " << demon.getThreatLevel() << std::endl;
 
-            // Combat loop: player attacks based on weapon speed, then demon retaliates
             while (demon.isAlive() && player.isAlive()) {
-                const Weapon& activeWeapon = player.getActiveWeapon();
-                // Number of attacks per turn is based on weapon speed (at least 1)
-                int numAttacks = static_cast<int>(activeWeapon.getAttackSpeed() + 0.5);
-                if (numAttacks < 1) numAttacks = 1;
-
-                std::cout << "  [Turn Start] " << player.getName() << " attacks " << numAttacks 
-                          << " time(s) with " << activeWeapon.getName() << "!" << std::endl;
-
-                for (int a = 0; a < numAttacks && demon.isAlive(); ++a) {
                     player.attack(demon);
-                }
 
                 // Demon retaliates if still alive
-                if (demon.isAlive() && player.isAlive()) {
                     int demonDmg = demon.attack();
-
-                    // Distinct weapon gameplay effects:
-                    if (activeWeapon.getType() == WeaponType::Ranged) {
-                        // 40% chance the demon misses because player keeps distance with ranged weapon
-                        if (std::rand() % 100 < 40) {
-                            std::cout << "  >>> " << demon.getName() << " misses because " 
-                                      << player.getName() << " is keeping distance with Ranged weapons! <<<" << std::endl;
-                            demonDmg = 0;
-                        }
-                    } else { // Melee
-                        // 25% chance to deflect/parry demon attacks with melee weapons
-                        if (std::rand() % 100 < 25) {
-                            std::cout << "  >>> " << player.getName() << " perfectly parries " 
-                                      << demon.getName() << "'s strike with " << activeWeapon.getName() << "! <<<" << std::endl;
-                            demonDmg = 0;
-                        }
-                    }
-
-                    if (demonDmg > 0) {
                         int actualDmg = player.takeDamage(demonDmg);
                         std::cout << "  " << demon.getName() << " strikes back for "
                                   << actualDmg << " damage!" << std::endl;
-                    }
                     std::cout << "  " << player.getName() << " HP: "
                               << player.getCurrentHealth() << "/" << player.getMaxHealth()
                               << std::endl;
@@ -145,11 +111,5 @@ std::ostream& operator<<(std::ostream& os, const Castle& castle) {
     os << "Castle[" << castle.roomName
        << " | Artifact: " << castle.artifactName
        << (castle.artifactHidden ? " (hidden)" : " (FOUND)")
-       << " | Demons: [";
-    for (int i = 0; i < static_cast<int>(castle.demons.size()); ++i) {
-        if (i > 0) os << ", ";
-        os << castle.demons[i]; // TRUE COMPOSITION calling Demon's operator<< !
-    }
-    os << "]]";
     return os;
 }
