@@ -2,6 +2,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <utility>
+#include <streambuf>
+#include <iostream>
 #include "../include/Castle.h"
 #include "../include/Player.h"
 #include "../include/DMCExceptions.h"

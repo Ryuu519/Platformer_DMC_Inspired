@@ -1,10 +1,7 @@
 #include <sstream>
 #include "../include/Player.h"
 #include "../include/Demon.h"
-<<<<<<< HEAD
 #include "../include/DMCExceptions.h"
-=======
->>>>>>> 1a3ae9cfb1c91f476224ec9ac56d2acd5f9d950f
 
 // ===== Constructors =====
 
@@ -16,7 +13,6 @@ Player::Player()
 Player::Player(const std::string& name, int maxHealth, double dtMax)
     : name(name), maxHealth(maxHealth), currentHealth(maxHealth),
       devilTriggerBar(0.0), devilTriggerMax(dtMax),
-<<<<<<< HEAD
       devilTriggerActive(false), activeWeaponIndex(-1) {
     if (name.empty()) {
         throw InvalidEntityException("Player name cannot be empty!");
@@ -28,9 +24,6 @@ Player::Player(const std::string& name, int maxHealth, double dtMax)
         throw InvalidEntityException("Player max Devil Trigger energy must be greater than 0! (Received: " + std::to_string(dtMax) + ")");
     }
 }
-=======
-      devilTriggerActive(false), activeWeaponIndex(-1) {}
->>>>>>> 1a3ae9cfb1c91f476224ec9ac56d2acd5f9d950f
 
 // ===== Rule of Three =====
 
@@ -105,19 +98,11 @@ void Player::equipWeapon(const Weapon& weapon) {
 }
 
 bool Player::switchWeapon(int index) {
-<<<<<<< HEAD
     if (index < 0 || index >= static_cast<int>(weapons.size())) {
         throw CombatStateException("Cannot switch to weapon index " + std::to_string(index) + ". Dante only has " + std::to_string(weapons.size()) + " weapon(s) equipped!");
     }
     activeWeaponIndex = index;
     return true;
-=======
-    if (index >= 0 && index < static_cast<int>(weapons.size())) {
-        activeWeaponIndex = index;
-        return true;
-    }
-    return false;
->>>>>>> 1a3ae9cfb1c91f476224ec9ac56d2acd5f9d950f
 }
 
 void Player::activateDevilTrigger() {
@@ -129,13 +114,7 @@ void Player::activateDevilTrigger() {
     }
 
     if (devilTriggerBar < 30.0) {
-<<<<<<< HEAD
         throw CombatStateException("Not enough Devil Trigger energy! Dante has " + std::to_string(devilTriggerBar) + " energy, but activation requires 30.0!");
-=======
-        std::cout << name << " does not have enough Devil Trigger energy! (need 30, have "
-                  << devilTriggerBar << ")" << std::endl;
-        return;
->>>>>>> 1a3ae9cfb1c91f476224ec9ac56d2acd5f9d950f
     }
 
     devilTriggerActive = true;
