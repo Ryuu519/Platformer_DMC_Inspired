@@ -10,7 +10,7 @@ runs:
       if: runner.os == 'Linux'
       run: |
         sudo apt-get update
-        sudo apt-get install -y ninja-build libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libudev-dev libgl1-mesa-dev libx11-xcb-dev libxcb-randr0-dev libxcb-image0-dev
+        sudo apt-get install -y ninja-build libx11-dev libxrandr-dev libxcursor-dev libxinerama-dev libudev-dev libgl1-mesa-dev libfreetype-dev libxcb-image0-dev libxcb1-dev
 
     - name: Install valgrind
       shell: bash

@@ -848,8 +848,10 @@ int main() {
     // 1. Run console outputs for Homework evaluation
     runHomeworkConsoleDemos();
 
-    // 2. Launch SFML graphical interface
+#ifndef GITHUB_ACTIONS
+    // 2. Launch SFML graphical interface (skip on headless CI servers)
     runSFMLGame();
+#endif
 
     return 0;
 }
