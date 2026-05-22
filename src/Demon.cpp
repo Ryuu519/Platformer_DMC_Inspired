@@ -14,6 +14,8 @@ static std::string demonTypeToString(DemonType type) {
     }
 }
 
+int Demon::s_totalDefeated = 0;
+
 // ===== Demon Base Class Implementation =====
 Demon::Demon() : name("Unknown Demon"), type(DemonType::Scarecrow),
                  maxHealth(50), currentHealth(50), attackDamage(5), alive(true) {}
@@ -72,6 +74,7 @@ int Demon::takeDamage(int amount) {
     if (currentHealth <= 0) {
         currentHealth = 0;
         alive = false;
+        ++s_totalDefeated;
     }
     return actualDamage;
 }
@@ -87,7 +90,7 @@ std::string Demon::getThreatLevel() const {
     if (!alive) {
         return name + " has been slain.";
     }
-    double hpPercent = static_cast<double>(currentHealth) / maxHealth * 100.0;
+    const double hpPercent = static_cast<double>(currentHealth) / maxHealth * 100.0;
     std::string threat;
     if (type == DemonType::Boss) {
         threat = "EXTREME";
@@ -100,6 +103,14 @@ std::string Demon::getThreatLevel() const {
     }
     return name + " (" + demonTypeToString(type) + ") - Threat: " + threat
            + " [HP: " + std::to_string(currentHealth) + "/" + std::to_string(maxHealth) + "]";
+}
+
+double Demon::getHealthRatio() const {
+    return static_cast<double>(currentHealth) / maxHealth;
+}
+
+int Demon::getTotalDefeated() {
+    return s_totalDefeated;
 }
 
 // ===== ScarecrowDemon Implementation =====
@@ -117,9 +128,9 @@ std::unique_ptr<Demon> ScarecrowDemon::clone() const {
 void ScarecrowDemon::triggerSpecialAbility(Player& player) {
     if (!alive) return;
     std::cout << "  >>> [SPECIAL ABILITY] " << name << " executes Swift Claw Strike! <<<" << std::endl;
-    int dmg1 = player.takeDamage(attackDamage);
+    const int dmg1 = player.takeDamage(attackDamage);
     std::cout << "      - First strike hits Dante for " << dmg1 << " damage." << std::endl;
-    int dmg2 = player.takeDamage(attackDamage / 2);
+    const int dmg2 = player.takeDamage(attackDamage / 2);
     std::cout << "      - Second quick strike hits Dante for " << dmg2 << " damage." << std::endl;
 }
 
@@ -144,8 +155,8 @@ std::unique_ptr<Demon> HellPrideDemon::clone() const {
 void HellPrideDemon::triggerSpecialAbility(Player& player) {
     if (!alive) return;
     std::cout << "  >>> [SPECIAL ABILITY] " << name << " summons a Hellfire Explosion! <<<" << std::endl;
-    int fireDmg = attackDamage * 2;
-    int actualDmg = player.takeDamage(fireDmg);
+    const int fireDmg = attackDamage * 2;
+    const int actualDmg = player.takeDamage(fireDmg);
     std::cout << "      - The blast burns Dante for " << actualDmg << " fire damage!" << std::endl;
 }
 

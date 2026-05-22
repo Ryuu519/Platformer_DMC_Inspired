@@ -16,6 +16,9 @@ enum class DemonType {
 class Player; // forward declaration to avoid circular dependency
 
 class Demon {
+private:
+    static int s_totalDefeated; ///< Total demons defeated across the session
+
 protected:
     std::string name;
     DemonType type;
@@ -38,6 +41,12 @@ public:
     int getMaxHealth() const;
     int getAttackDamage() const;
     bool isAlive() const;
+
+    /// Returns ratio of current health to max health (0.0–1.0) for bar rendering
+    double getHealthRatio() const;
+
+    /// Returns total demons defeated across the session (static counter)
+    static int getTotalDefeated();
 
     /// Reduces health, updates alive status, returns actual damage taken
     virtual int takeDamage(int amount);

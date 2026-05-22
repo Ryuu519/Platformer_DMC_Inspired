@@ -111,6 +111,17 @@ static void runHomeworkConsoleDemos() {
     std::cout << "  (Copies destroyed safely - no memory leaks)" << std::endl;
     std::cout << std::endl;
 
+    std::cout << "[ OOP DEMO ] Static Members, STL & High-Level Methods" << std::endl;
+    separator('-', 48);
+    std::cout << "  Total Players Created: " << Player::getPlayerCount() << std::endl;
+    std::cout << "  Total Demons Defeated: " << Demon::getTotalDefeated() << std::endl;
+    std::cout << "  Total Rooms Cleared:   " << Castle::getRoomsCleared() << std::endl;
+    std::cout << "  Is entrance room cleared? " << (entrance.isCleared() ? "Yes" : "No") << std::endl;
+    if (const Demon* firstDemon = entrance.findFirstAliveDemon()) {
+        std::cout << "  First alive demon in entrance: " << firstDemon->getName() << std::endl;
+    }
+    std::cout << std::endl;
+
     separator('=', 48);
     std::cout << "  CONSOLE OOP DEMO COMPLETE. LAUNCHING SFML GUI..." << std::endl;
     separator('=', 48);
@@ -251,7 +262,7 @@ static void runSFMLGame() {
     GUIButton btnEnterRoom(387.f, 500.f, 250.f, 50.f, "ENTER ROOM", font, 20);
 
     // Transition buttons
-    GUIButton btnEnterRoom2(387.f, 580.f, 250.f, 50.f, "ENTER ROOM 2", font, 20);
+    GUIButton btnEnterRoom2(387.f, 550.f, 250.f, 50.f, "ENTER ROOM 2", font, 20);
 
     // Combat Action buttons
     GUIButton btnAttack(50.f, 630.f, 250.f, 50.f, "ATTACK", font, 20);
@@ -266,6 +277,13 @@ static void runSFMLGame() {
     // GameOver & Victory Buttons
     GUIButton btnRetry(250.f, 550.f, 200.f, 50.f, "PLAY AGAIN", font, 20);
     GUIButton btnExit(574.f, 550.f, 200.f, 50.f, "EXIT GAME", font, 20);
+
+    // Buttons specifically for Room Complete screen to keep them centered
+    GUIButton btnCompleteSwitchW(252.f, 630.f, 250.f, 50.f, "SWITCH WEAPON", font, 20);
+    GUIButton btnCompleteDT(522.f, 630.f, 250.f, 50.f, "DEVIL TRIGGER", font, 20);
+    GUIButton btnCompleteWReb(252.f, 570.f, 250.f, 40.f, "0 - Rebellion", font, 16);
+    GUIButton btnCompleteWEb(252.f, 520.f, 250.f, 40.f, "1 - Ebony & Ivory", font, 16);
+    GUIButton btnCompleteWCerb(252.f, 470.f, 250.f, 40.f, "2 - Cerberus", font, 16);
 
     while (window.isOpen()) {
         sf::Event event;
@@ -295,12 +313,12 @@ static void runSFMLGame() {
             btnEnterRoom.update(mousePos);
         } else if (data.state == GameState::Room1Complete) {
             btnEnterRoom2.update(mousePos);
-            btnSwitchW.update(mousePos);
-            btnDT.update(mousePos);
+            btnCompleteSwitchW.update(mousePos);
+            btnCompleteDT.update(mousePos);
             if (data.weaponMenuOpen) {
-                btnWReb.update(mousePos);
-                btnWEb.update(mousePos);
-                btnWCerb.update(mousePos);
+                btnCompleteWReb.update(mousePos);
+                btnCompleteWEb.update(mousePos);
+                btnCompleteWCerb.update(mousePos);
             }
         } else if (data.state == GameState::Room1Combat || data.state == GameState::Room2Combat) {
             btnAttack.update(mousePos);
@@ -353,21 +371,21 @@ static void runSFMLGame() {
                     if (btnEnterRoom2.isClicked(mousePos, mouseClicked)) {
                         data.weaponMenuOpen = false;
                         data.state = GameState::Room2Intro;
-                    } else if (btnSwitchW.isClicked(mousePos, mouseClicked)) {
+                    } else if (btnCompleteSwitchW.isClicked(mousePos, mouseClicked)) {
                         data.weaponMenuOpen = !data.weaponMenuOpen;
-                    } else if (btnDT.isClicked(mousePos, mouseClicked)) {
+                    } else if (btnCompleteDT.isClicked(mousePos, mouseClicked)) {
                         data.dante.activateDevilTrigger();
                         data.combatLog.push_back("Dante toggled Devil Trigger!");
                     } else if (data.weaponMenuOpen) {
-                        if (btnWReb.isClicked(mousePos, mouseClicked)) {
+                        if (btnCompleteWReb.isClicked(mousePos, mouseClicked)) {
                             data.dante.switchWeapon(0);
                             data.combatLog.push_back("Equipped: Rebellion.");
                             data.weaponMenuOpen = false;
-                        } else if (btnWEb.isClicked(mousePos, mouseClicked)) {
+                        } else if (btnCompleteWEb.isClicked(mousePos, mouseClicked)) {
                             data.dante.switchWeapon(1);
                             data.combatLog.push_back("Equipped: Ebony & Ivory.");
                             data.weaponMenuOpen = false;
-                        } else if (btnWCerb.isClicked(mousePos, mouseClicked)) {
+                        } else if (btnCompleteWCerb.isClicked(mousePos, mouseClicked)) {
                             data.dante.switchWeapon(2);
                             data.combatLog.push_back("Equipped: Cerberus.");
                             data.weaponMenuOpen = false;
@@ -459,7 +477,7 @@ static void runSFMLGame() {
             title.setPosition(512.f, 220.f);
             window.draw(title);
 
-            sf::Text subtitle("Castle of the Damned [SFML Edition]", font, 22);
+            sf::Text subtitle("Castle of the Damned", font, 22);
             subtitle.setFillColor(sf::Color::White);
             sf::FloatRect sr = subtitle.getLocalBounds();
             subtitle.setOrigin(sr.left + sr.width/2.f, sr.top + sr.height/2.f);
@@ -570,14 +588,14 @@ static void runSFMLGame() {
             window.draw(dtText);
 
             // Switch weapon sub-buttons if menu is open
-            btnSwitchW.draw(window);
-            btnDT.draw(window);
+            btnCompleteSwitchW.draw(window);
+            btnCompleteDT.draw(window);
             btnEnterRoom2.draw(window);
-
+ 
             if (data.weaponMenuOpen) {
-                btnWReb.draw(window);
-                btnWEb.draw(window);
-                btnWCerb.draw(window);
+                btnCompleteWReb.draw(window);
+                btnCompleteWEb.draw(window);
+                btnCompleteWCerb.draw(window);
             }
         }
         else if (data.state == GameState::Room1Combat || data.state == GameState::Room2Combat) {

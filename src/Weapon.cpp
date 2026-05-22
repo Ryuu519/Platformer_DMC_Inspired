@@ -16,6 +16,10 @@ Weapon::Weapon(const std::string& name, int damage, WeaponType type, double atta
     }
 }
 
+std::string Weapon::typeToString(WeaponType type) {
+    return (type == WeaponType::Melee) ? "Melee" : "Ranged";
+}
+
 const std::string& Weapon::getName() const {
     return name;
 }
@@ -37,7 +41,8 @@ double Weapon::calculateDPS() const {
 }
 
 std::string Weapon::getCombatDescription() const {
-    std::string desc = name;
+    const std::string typeStr = typeToString(type);
+    std::string desc = name + " [" + typeStr + "]";
     if (type == WeaponType::Melee) {
         desc += " slashes through the air";
     } else {
@@ -49,7 +54,7 @@ std::string Weapon::getCombatDescription() const {
 
 std::ostream& operator<<(std::ostream& os, const Weapon& weapon) {
     os << "Weapon[" << weapon.name << " | "
-       << (weapon.type == WeaponType::Melee ? "Melee" : "Ranged")
+       << Weapon::typeToString(weapon.type)
        << " | DMG: " << weapon.damage
        << " | SPD: " << weapon.attackSpeed
        << " | DPS: " << weapon.calculateDPS() << "]";

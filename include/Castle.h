@@ -16,6 +16,8 @@ private:
     bool artifactHidden;
     std::string artifactName;
 
+    static int s_roomsCleared; ///< Total rooms fully cleared across the session
+
 public:
     Castle();
     Castle(const std::string& roomName, const std::string& artifactName);
@@ -29,11 +31,21 @@ public:
     // Friend swap function for the copy-and-swap idiom
     friend void swap(Castle& first, Castle& second) noexcept;
 
+    /// Returns total rooms fully cleared across the session (static counter)
+    static int getRoomsCleared();
+
     const std::string& getRoomName() const;
     const std::string& getArtifactName() const;
     bool isArtifactHidden() const;
     int getDemonCount() const;
     int getAliveDemonCount() const;
+
+    /// Returns true if all demons in the room have been defeated (high-level semantic check)
+    bool isCleared() const;
+
+    /// Returns a pointer to the first alive demon (uses std::find_if), or nullptr if none
+    Demon* findFirstAliveDemon();
+    const Demon* findFirstAliveDemon() const;
 
     /// Adds a demon to this room (polymorphic add/clone)
     void addDemon(const Demon& demon);

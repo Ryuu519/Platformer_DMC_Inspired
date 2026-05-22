@@ -20,6 +20,9 @@ public:
     Weapon();
     Weapon(const std::string& name, int damage, WeaponType type, double attackSpeed);
 
+    /// Converts WeaponType enum to its human-readable string name (static utility)
+    static std::string typeToString(WeaponType type);
+
     const std::string& getName() const;
     int getDamage() const;
     WeaponType getType() const;

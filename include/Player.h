@@ -19,6 +19,8 @@ private:
     std::vector<Weapon> weapons;
     int activeWeaponIndex;
 
+    static int s_totalCreated; ///< Total Player instances ever created across the session
+
 public:
     Player();
     Player(const std::string& name, int maxHealth, double dtMax);
@@ -30,20 +32,40 @@ public:
     Player& operator=(Player&& other) noexcept = default;
     ~Player();
 
+    /// Returns total Player objects ever constructed (static session counter)
+    static int getPlayerCount();
+
     const std::string& getName() const;
     int getCurrentHealth() const;
     int getMaxHealth() const;
     double getDevilTriggerBar() const;
     bool isDevilTriggerActive() const;
     bool isAlive() const;
-    int getWeaponCount() const;
     const Weapon& getActiveWeapon() const;
+
+    /// Returns currentHealth / maxHealth ratio (0.0–1.0) — used for bar rendering
+    double getHealthRatio() const;
+
+    /// Returns devilTriggerBar / devilTriggerMax ratio (0.0–1.0) — used for bar rendering
+    double getDTRatio() const;
+
+    /// Returns formatted "HP: X/Y" string for display
+    std::string getHealthString() const;
+
+    /// Returns formatted "DT: X/Y [ACTIVE]" string for display
+    std::string getDTString() const;
+
+    /// Returns a one-line summary of the active weapon (name, type, damage, DPS)
+    std::string getWeaponSummary() const;
 
     /// Adds a weapon to the player's arsenal
     void equipWeapon(const Weapon& weapon);
 
     /// Switches to a weapon by index (0-based), returns true if valid
     bool switchWeapon(int index);
+
+    /// Sorts all equipped weapons in descending DPS order using std::sort
+    void sortWeaponsByDPS();
 
     /// Activates/deactivates Devil Trigger - heals and boosts damage when activated
     void activateDevilTrigger();
@@ -55,7 +77,7 @@ public:
     /// Takes damage from an enemy, reduces DT bar. Returns actual damage taken.
     int takeDamage(int amount);
 
-    /// Displays a full status report of the player
+    /// Displays a full status report of the player (uses std::max_element to mark best weapon)
     std::string getStatusReport() const;
 
     friend std::ostream& operator<<(std::ostream& os, const Player& player);

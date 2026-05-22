@@ -3,9 +3,13 @@
 #include <streambuf>
 #include <iostream>
 #include <random>
+#include <algorithm>
 #include "../include/Castle.h"
 #include "../include/Player.h"
 #include "../include/DMCExceptions.h"
+
+// ===== Static Member Definition =====
+int Castle::s_roomsCleared = 0;
 
 namespace {
     std::mt19937& getRNG() {
@@ -95,6 +99,28 @@ int Castle::getAliveDemonCount() const {
         }
     }
     return count;
+}
+
+int Castle::getRoomsCleared() {
+    return s_roomsCleared;
+}
+
+bool Castle::isCleared() const {
+    return getAliveDemonCount() == 0;
+}
+
+Demon* Castle::findFirstAliveDemon() {
+    auto it = std::find_if(demons.begin(), demons.end(), [](const auto& d) {
+        return d && d->isAlive();
+    });
+    return (it != demons.end()) ? it->get() : nullptr;
+}
+
+const Demon* Castle::findFirstAliveDemon() const {
+    auto it = std::find_if(demons.begin(), demons.end(), [](const auto& d) {
+        return d && d->isAlive();
+    });
+    return (it != demons.end()) ? it->get() : nullptr;
 }
 
 void Castle::addDemon(const Demon& demon) {
@@ -222,6 +248,7 @@ void Castle::executeCombatRound(Player& player, Demon& target, std::vector<std::
     // Reveal artifact if all demons are dead
     if (getAliveDemonCount() == 0 && artifactHidden) {
         artifactHidden = false;
+        ++s_roomsCleared;
         log.push_back("  *** All demons defeated! ***");
         log.push_back("  *** You discovered the artifact: " + artifactName + "! ***");
     }

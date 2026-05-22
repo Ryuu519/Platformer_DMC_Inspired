@@ -1,14 +1,20 @@
 #include <sstream>
+#include <algorithm>
 #include "../include/Player.h"
 #include "../include/Demon.h"
 #include "../include/DMCExceptions.h"
+
+// ===== Static Member Definition =====
+int Player::s_totalCreated = 0;
 
 // ===== Constructors =====
 
 Player::Player()
     : name("Dante"), maxHealth(100), currentHealth(100),
       devilTriggerBar(0.0), devilTriggerMax(100.0),
-      devilTriggerActive(false), activeWeaponIndex(-1) {}
+      devilTriggerActive(false), activeWeaponIndex(-1) {
+    ++s_totalCreated;
+}
 
 Player::Player(const std::string& name, int maxHealth, double dtMax)
     : name(name), maxHealth(maxHealth), currentHealth(maxHealth),
@@ -23,6 +29,7 @@ Player::Player(const std::string& name, int maxHealth, double dtMax)
     if (dtMax <= 0.0) {
         throw InvalidEntityException("Player max Devil Trigger energy must be greater than 0! (Received: " + std::to_string(dtMax) + ")");
     }
+    ++s_totalCreated;
 }
 
 // ===== Rule of Three =====
@@ -32,6 +39,7 @@ Player::Player(const Player& other)
       devilTriggerBar(other.devilTriggerBar), devilTriggerMax(other.devilTriggerMax),
       devilTriggerActive(other.devilTriggerActive), weapons(other.weapons),
       activeWeaponIndex(other.activeWeaponIndex) {
+    ++s_totalCreated;
     std::cout << "[Player Copy Constructor] Copied: " << name << std::endl;
 }
 
@@ -52,6 +60,12 @@ Player& Player::operator=(const Player& other) {
 
 Player::~Player() {
     std::cout << "[Player Destructor] Destroying player: " << name << std::endl;
+}
+
+// ===== Static Method =====
+
+int Player::getPlayerCount() {
+    return s_totalCreated;
 }
 
 // ===== Getters =====
@@ -80,10 +94,6 @@ bool Player::isAlive() const {
     return currentHealth > 0;
 }
 
-int Player::getWeaponCount() const {
-    return static_cast<int>(weapons.size());
-}
-
 const Weapon& Player::getActiveWeapon() const {
     if (activeWeaponIndex < 0 || activeWeaponIndex >= static_cast<int>(weapons.size())) {
         throw CombatStateException("No active weapon equipped!");
@@ -91,7 +101,40 @@ const Weapon& Player::getActiveWeapon() const {
     return weapons[activeWeaponIndex];
 }
 
-// ===== Public member functions =====
+// ===== High-Level Aggregate Methods =====
+
+double Player::getHealthRatio() const {
+    return static_cast<double>(currentHealth) / maxHealth;
+}
+
+double Player::getDTRatio() const {
+    return devilTriggerBar / devilTriggerMax;
+}
+
+std::string Player::getHealthString() const {
+    return "HP: " + std::to_string(currentHealth) + "/" + std::to_string(maxHealth);
+}
+
+std::string Player::getDTString() const {
+    std::string result = "DT: " + std::to_string(static_cast<int>(devilTriggerBar))
+                       + "/" + std::to_string(static_cast<int>(devilTriggerMax));
+    if (devilTriggerActive) {
+        result += " [ACTIVE]";
+    }
+    return result;
+}
+
+std::string Player::getWeaponSummary() const {
+    if (activeWeaponIndex < 0 || activeWeaponIndex >= static_cast<int>(weapons.size())) {
+        return "No weapon equipped";
+    }
+    const Weapon& w = weapons[activeWeaponIndex];
+    return w.getName() + " [" + Weapon::typeToString(w.getType()) + "] | DMG: "
+         + std::to_string(w.getDamage()) + " | DPS: "
+         + std::to_string(static_cast<int>(w.calculateDPS()));
+}
+
+// ===== Public Member Functions =====
 
 void Player::equipWeapon(const Weapon& weapon) {
     weapons.push_back(weapon);
@@ -102,10 +145,22 @@ void Player::equipWeapon(const Weapon& weapon) {
 
 bool Player::switchWeapon(int index) {
     if (index < 0 || index >= static_cast<int>(weapons.size())) {
-        throw CombatStateException("Cannot switch to weapon index " + std::to_string(index) + ". Dante only has " + std::to_string(weapons.size()) + " weapon(s) equipped!");
+        throw CombatStateException("Cannot switch to weapon index " + std::to_string(index)
+            + ". Dante only has " + std::to_string(weapons.size()) + " weapon(s) equipped!");
     }
     activeWeaponIndex = index;
     return true;
+}
+
+void Player::sortWeaponsByDPS() {
+    std::sort(weapons.begin(), weapons.end(),
+        [](const Weapon& a, const Weapon& b) {
+            return a.calculateDPS() > b.calculateDPS(); // descending
+        });
+    // After sort, reset to best weapon (index 0)
+    if (!weapons.empty()) {
+        activeWeaponIndex = 0;
+    }
 }
 
 void Player::activateDevilTrigger() {
@@ -123,7 +178,7 @@ void Player::activateDevilTrigger() {
     devilTriggerActive = true;
 
     // Heal 20% of max health on activation
-    int healAmount = maxHealth / 5;
+    const int healAmount = maxHealth / 5;
     currentHealth += healAmount;
     if (currentHealth > maxHealth) {
         currentHealth = maxHealth;
@@ -141,12 +196,12 @@ int Player::attack(Demon& target) {
     }
 
     const Weapon& weapon = weapons[activeWeaponIndex];
-    int baseDamage = weapon.getDamage();
+    const int baseDamage = weapon.getDamage();
 
     // Devil Trigger doubles damage
-    int finalDamage = devilTriggerActive ? baseDamage * 2 : baseDamage;
+    const int finalDamage = devilTriggerActive ? baseDamage * 2 : baseDamage;
 
-    int actualDamage = target.takeDamage(finalDamage);
+    const int actualDamage = target.takeDamage(finalDamage);
 
     std::cout << name << " attacks " << target.getName() << " with " << weapon.getName()
               << " for " << actualDamage << " damage";
@@ -156,7 +211,7 @@ int Player::attack(Demon& target) {
     std::cout << std::endl;
 
     // Build DT bar on hit (melee builds more)
-    double dtGain = (weapon.getType() == WeaponType::Melee) ? 8.0 : 4.0;
+    const double dtGain = (weapon.getType() == WeaponType::Melee) ? 8.0 : 4.0;
     if (!devilTriggerActive) {
         devilTriggerBar += dtGain;
         if (devilTriggerBar > devilTriggerMax) {
@@ -198,15 +253,22 @@ int Player::takeDamage(int amount) {
 std::string Player::getStatusReport() const {
     std::ostringstream oss;
     oss << "====== STATUS REPORT: " << name << " ======\n";
-    oss << "  HP: " << currentHealth << "/" << maxHealth << "\n";
-    oss << "  DT Bar: " << devilTriggerBar << "/" << devilTriggerMax;
-    if (devilTriggerActive) {
-        oss << " [ACTIVE]";
-    }
-    oss << "\n";
+    oss << "  " << getHealthString() << "\n";
+    oss << "  " << getDTString() << "\n";
     oss << "  Weapons (" << weapons.size() << "):\n";
+
+    // Use std::max_element (STL) to find the weapon with highest DPS
+    const auto bestIt = weapons.empty() ? weapons.cend()
+        : std::max_element(weapons.cbegin(), weapons.cend(),
+            [](const Weapon& a, const Weapon& b) {
+                return a.calculateDPS() < b.calculateDPS();
+            });
+
     for (int i = 0; i < static_cast<int>(weapons.size()); ++i) {
-        oss << "    " << (i == activeWeaponIndex ? "-> " : "   ") << weapons[i] << "\n";
+        const bool isBest = !weapons.empty() && (weapons.cbegin() + i == bestIt);
+        oss << "    " << (i == activeWeaponIndex ? "-> " : "   ") << weapons[i];
+        if (isBest) { oss << " [BEST DPS]"; }
+        oss << "\n";
     }
     oss << "========================================";
     return oss.str();
