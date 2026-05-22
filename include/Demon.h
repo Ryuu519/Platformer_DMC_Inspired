@@ -134,4 +134,27 @@ protected:
     void printImpl(std::ostream& os) const override;
 };
 
+// ============================================================================
+// Derived Class 4: ShadowDemon (Elusive, drains DT energy and phases at low HP)
+// ============================================================================
+class ShadowDemon : public Demon {
+private:
+    bool shadowPhaseActive; ///< True when HP is below 40% — damage reduced by half
+
+public:
+    ShadowDemon();
+    ShadowDemon(const std::string& name, int maxHealth, int attackDamage);
+
+    std::unique_ptr<Demon> clone() const override;
+    void triggerSpecialAbility(Player& player) override;
+
+    /// Overrides takeDamage: while in Shadow Phase, incoming damage is halved
+    int takeDamage(int amount) override;
+
+    bool isShadowPhase() const;
+
+protected:
+    void printImpl(std::ostream& os) const override;
+};
+
 #endif // DEMON_H

@@ -95,7 +95,9 @@ static void runHomeworkConsoleDemos() {
     entrance.addDemon(hellPride);
 
     Castle throneRoom("Throne of Mundus", "Force Edge Sword");
+    ShadowDemon shadow("Shadow", 80, 15);
     throneRoom.addDemon(frost);
+    throneRoom.addDemon(shadow);
 
     {
         Castle entranceCopy(entrance);
@@ -220,7 +222,9 @@ struct GameData {
 
         throneRoom = Castle("Throne of Mundus", "Force Edge Sword");
         FrostDemon frost("Frost", 120, 20);
+        ShadowDemon shadow("Shadow", 80, 15);
         throneRoom.addDemon(frost);
+        throneRoom.addDemon(shadow);
 
         combatLog.clear();
         combatLog.push_back("Dante stands before the gates of the Castle...");

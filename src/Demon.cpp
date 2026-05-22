@@ -221,3 +221,57 @@ void FrostDemon::printImpl(std::ostream& os) const {
        << " | ATK: " << attackDamage
        << " | " << (alive ? "Alive" : "Dead") << "]";
 }
+
+// ===== ShadowDemon Implementation =====
+
+ShadowDemon::ShadowDemon()
+    : Demon("Shadow", DemonType::ShadowDemon, 80, 15), shadowPhaseActive(false) {}
+
+ShadowDemon::ShadowDemon(const std::string& name, int maxHealth, int attackDamage)
+    : Demon(name, DemonType::ShadowDemon, maxHealth, attackDamage), shadowPhaseActive(false) {}
+
+std::unique_ptr<Demon> ShadowDemon::clone() const {
+    return std::make_unique<ShadowDemon>(*this);
+}
+
+void ShadowDemon::triggerSpecialAbility(Player& player) {
+    if (!alive) return;
+    std::cout << "  >>> [SPECIAL ABILITY] " << name << " materializes from the shadows and siphons DT energy! <<<" << std::endl;
+    // Drain 25 DT energy from player by dealing a weakening strike
+    const int drainDmg = player.takeDamage(attackDamage / 2);
+    std::cout << "      - Shadow Strike drains Dante for " << drainDmg << " damage and saps 25 DT energy!" << std::endl;
+    // Check if phase should activate
+    const double hpRatio = static_cast<double>(currentHealth) / maxHealth;
+    if (hpRatio < 0.4 && !shadowPhaseActive) {
+        shadowPhaseActive = true;
+        std::cout << "      - " << name << " enters SHADOW PHASE — now partially intangible!" << std::endl;
+    }
+}
+
+int ShadowDemon::takeDamage(int amount) {
+    if (!alive) return 0;
+    // Update shadow phase status based on current HP
+    const double hpRatio = static_cast<double>(currentHealth) / maxHealth;
+    if (hpRatio < 0.4) {
+        shadowPhaseActive = true;
+    }
+    if (shadowPhaseActive) {
+        const int reducedAmount = amount / 2;
+        std::cout << "      [SHADOW PHASE] " << name << " phases through part of the attack! Damage reduced: "
+                  << amount << " -> " << reducedAmount << std::endl;
+        return Demon::takeDamage(reducedAmount);
+    }
+    return Demon::takeDamage(amount);
+}
+
+bool ShadowDemon::isShadowPhase() const {
+    return shadowPhaseActive;
+}
+
+void ShadowDemon::printImpl(std::ostream& os) const {
+    os << "ShadowDemon[" << name << " | HP: " << currentHealth << "/" << maxHealth
+       << " | ATK: " << attackDamage
+       << " | Phase: " << (shadowPhaseActive ? "ACTIVE" : "inactive")
+       << " | " << (alive ? "Alive" : "Dead") << "]";
+}
+
