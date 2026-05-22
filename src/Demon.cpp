@@ -196,7 +196,7 @@ int FrostDemon::takeDamage(int amount) {
 }
 
 void FrostDemon::applyFrostDebuff(Player& player) {
-    std::cout << "      >>> Dante suffers from frostbite! DT bar is drained by 15.0 and he takes 5 cold damage! <<<" << std::endl;
+    std::cout << "      >>> Dante suffers from frostbite from " << name << "! DT bar is drained by 15.0 and he takes 5 cold damage! <<<" << std::endl;
     player.takeDamage(5);
 }
 
