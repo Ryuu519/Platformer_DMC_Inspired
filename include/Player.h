@@ -23,9 +23,11 @@ public:
     Player();
     Player(const std::string& name, int maxHealth, double dtMax);
 
-    // Rule of Three
+    // Rule of Five
     Player(const Player& other);
+    Player(Player&& other) noexcept = default;
     Player& operator=(const Player& other);
+    Player& operator=(Player&& other) noexcept = default;
     ~Player();
 
     const std::string& getName() const;

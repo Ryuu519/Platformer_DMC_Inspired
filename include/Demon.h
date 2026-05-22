@@ -57,6 +57,11 @@ public:
     }
 
 protected:
+    Demon(const Demon&) = default;
+    Demon& operator=(const Demon&) = default;
+    Demon(Demon&&) noexcept = default;
+    Demon& operator=(Demon&&) noexcept = default;
+
     // Pure virtual helper function for printing, implemented by derived classes
     virtual void printImpl(std::ostream& os) const = 0;
 };

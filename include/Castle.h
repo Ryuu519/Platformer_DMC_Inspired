@@ -20,8 +20,9 @@ public:
     Castle();
     Castle(const std::string& roomName, const std::string& artifactName);
 
-    // Rule of Three for deep copying the pointers
+    // Rule of Five for deep copying the pointers
     Castle(const Castle& other);
+    Castle(Castle&& other) noexcept;
     Castle& operator=(Castle other); // using copy-and-swap (takes by value!)
     ~Castle();
 

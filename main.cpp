@@ -175,7 +175,7 @@ public:
         return isHovered && mousePressed;
     }
 
-    void draw(sf::RenderWindow& window) {
+    void draw(sf::RenderWindow& window) const {
         window.draw(shape);
         window.draw(text);
     }
@@ -189,7 +189,7 @@ struct GameData {
     Castle entrance;
     Castle throneRoom;
     std::vector<std::string> combatLog;
-    GameState state;
+    GameState state = GameState::TitleScreen;
     bool weaponMenuOpen = false;
 
     void reset() {
@@ -221,6 +221,7 @@ struct GameData {
 // ============================================================
 // MAIN RUN SFML GRAPHICS LOOP
 // ============================================================
+#ifndef GITHUB_ACTIONS
 static void runSFMLGame() {
     sf::RenderWindow window(sf::VideoMode(1024, 768), "Devil May Cry: Castle of the Damned", sf::Style::Titlebar | sf::Style::Close);
     window.setFramerateLimit(60);
@@ -841,6 +842,7 @@ static void runSFMLGame() {
         window.display();
     }
 }
+#endif
 
 int main() {
     std::srand(static_cast<unsigned int>(std::time(nullptr)));

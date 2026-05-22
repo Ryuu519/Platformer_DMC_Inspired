@@ -1,22 +1,14 @@
 #ifndef OOP_DMCEXCEPTIONS_H
 #define OOP_DMCEXCEPTIONS_H
 
-#include <exception>
+#include <stdexcept>
 #include <string>
 #include <utility>
 
-// Base custom exception class inheriting from std::exception
-class DMCGameException : public std::exception {
-protected:
-    std::string message;
-
+// Base custom exception class inheriting from std::runtime_error
+class DMCGameException : public std::runtime_error {
 public:
-    explicit DMCGameException(std::string msg) : message(std::move(msg)) {}
-    
-    // Override what() const noexcept from std::exception
-    const char* what() const noexcept override {
-        return message.c_str();
-    }
+    explicit DMCGameException(const std::string& msg) : std::runtime_error(msg) {}
 };
 
 // 1. Category 1: InvalidEntityException (Thrown in Player/Demon constructors for invalid stats)

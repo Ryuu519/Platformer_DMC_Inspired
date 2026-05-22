@@ -85,6 +85,9 @@ int Player::getWeaponCount() const {
 }
 
 const Weapon& Player::getActiveWeapon() const {
+    if (activeWeaponIndex < 0 || activeWeaponIndex >= static_cast<int>(weapons.size())) {
+        throw CombatStateException("No active weapon equipped!");
+    }
     return weapons[activeWeaponIndex];
 }
 

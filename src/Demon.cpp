@@ -10,8 +10,8 @@ static std::string demonTypeToString(DemonType type) {
         case DemonType::Frost:       return "Frost";
         case DemonType::ShadowDemon: return "Shadow Demon";
         case DemonType::Boss:        return "Boss";
+        default:                     return "Unknown";
     }
-    return "Unknown";
 }
 
 // ===== Demon Base Class Implementation =====

@@ -1,12 +1,36 @@
 #include <sstream>
-#include <cstdlib>
-#include <ctime>
 #include <utility>
 #include <streambuf>
 #include <iostream>
+#include <random>
 #include "../include/Castle.h"
 #include "../include/Player.h"
 #include "../include/DMCExceptions.h"
+
+namespace {
+    std::mt19937& getRNG() {
+        static std::random_device rd;
+        static std::mt19937 gen(rd());
+        return gen;
+    }
+
+    int randomPercent() {
+        std::uniform_int_distribution<int> dist(0, 99);
+        return dist(getRNG());
+    }
+
+    struct StreamRedirect {
+        std::streambuf* oldCout;
+        explicit StreamRedirect(std::streambuf* newBuf) : oldCout(std::cout.rdbuf(newBuf)) {}
+        ~StreamRedirect() {
+            std::cout.rdbuf(oldCout);
+        }
+        StreamRedirect(const StreamRedirect&) = delete;
+        StreamRedirect& operator=(const StreamRedirect&) = delete;
+        StreamRedirect(StreamRedirect&&) = delete;
+        StreamRedirect& operator=(StreamRedirect&&) = delete;
+    };
+}
 
 Castle::Castle() : roomName("Unknown Room"), artifactHidden(true), artifactName("Unknown Artifact") {}
 
@@ -23,6 +47,10 @@ Castle::Castle(const Castle& other)
             demons.push_back(demon->clone());
         }
     }
+}
+
+Castle::Castle(Castle&& other) noexcept : Castle() {
+    swap(*this, other);
 }
 
 void swap(Castle& first, Castle& second) noexcept {
@@ -122,13 +150,11 @@ void Castle::applyRoomEntryEffects(Player& player, std::vector<std::string>& log
             if (auto* frost = dynamic_cast<FrostDemon*>(demon.get())) {
                 log.push_back(">>> WARNING: " + frost->getName() + "'s freezing presence drops the room temperature! <<<");
                 
-                std::streambuf* oldCout = std::cout.rdbuf();
                 std::ostringstream ss;
-                std::cout.rdbuf(ss.rdbuf());
-                
-                frost->applyFrostDebuff(player);
-                
-                std::cout.rdbuf(oldCout);
+                {
+                    StreamRedirect redirect(ss.rdbuf());
+                    frost->applyFrostDebuff(player);
+                }
                 
                 std::string captured = ss.str();
                 std::istringstream iss(captured);
@@ -146,44 +172,43 @@ void Castle::applyRoomEntryEffects(Player& player, std::vector<std::string>& log
 void Castle::executeCombatRound(Player& player, Demon& target, std::vector<std::string>& log) {
     if (!player.isAlive() || !target.isAlive()) return;
 
-    std::streambuf* oldCout = std::cout.rdbuf();
     std::ostringstream ss;
-    std::cout.rdbuf(ss.rdbuf());
+    {
+        StreamRedirect redirect(ss.rdbuf());
 
-    // 1. Dante attacks
-    player.attack(target);
+        // 1. Dante attacks
+        player.attack(target);
 
-    // 2. Demon retaliates if still alive
-    if (target.isAlive() && player.isAlive()) {
-        if (std::rand() % 100 < 30) {
-            target.triggerSpecialAbility(player);
-        } else {
-            int demonDmg = target.attack();
-            const Weapon& activeWeapon = player.getActiveWeapon();
+        // 2. Demon retaliates if still alive
+        if (target.isAlive() && player.isAlive()) {
+            if (randomPercent() < 30) {
+                target.triggerSpecialAbility(player);
+            } else {
+                int demonDmg = target.attack();
+                const Weapon& activeWeapon = player.getActiveWeapon();
 
-            if (activeWeapon.getType() == WeaponType::Ranged && std::rand() % 100 < 35) {
-                std::cout << "  >>> " << player.getName() << " keeps their distance! "
-                          << target.getName() << " misses! <<<" << std::endl;
-                demonDmg = 0;
-            } else if (activeWeapon.getType() == WeaponType::Melee && std::rand() % 100 < 25) {
-                std::cout << "  >>> " << player.getName() << " parries "
-                          << target.getName() << "'s strike with " << activeWeapon.getName() << "! <<<" << std::endl;
-                demonDmg = 0;
-            }
+                if (activeWeapon.getType() == WeaponType::Ranged && randomPercent() < 35) {
+                    std::cout << "  >>> " << player.getName() << " keeps their distance! "
+                              << target.getName() << " misses! <<<" << std::endl;
+                    demonDmg = 0;
+                } else if (activeWeapon.getType() == WeaponType::Melee && randomPercent() < 25) {
+                    std::cout << "  >>> " << player.getName() << " parries "
+                              << target.getName() << "'s strike with " << activeWeapon.getName() << "! <<<" << std::endl;
+                    demonDmg = 0;
+                }
 
-            if (demonDmg > 0) {
-                int actual = player.takeDamage(demonDmg);
-                std::cout << "  [DEMON] " << target.getName()
-                          << " strikes for " << actual << " damage!" << std::endl;
+                if (demonDmg > 0) {
+                    int actual = player.takeDamage(demonDmg);
+                    std::cout << "  [DEMON] " << target.getName()
+                              << " strikes for " << actual << " damage!" << std::endl;
+                }
             }
         }
-    }
 
-    if (!target.isAlive()) {
-        std::cout << "  *** " << target.getName() << " has been defeated! ***" << std::endl;
+        if (!target.isAlive()) {
+            std::cout << "  *** " << target.getName() << " has been defeated! ***" << std::endl;
+        }
     }
-
-    std::cout.rdbuf(oldCout);
 
     std::string captured = ss.str();
     std::istringstream iss(captured);
