@@ -1,6 +1,7 @@
 
 build/
 build_antigravity/
+scratch/
 install_dir/
 cppcheck-scan-dir/
 .local/
